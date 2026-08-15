@@ -495,16 +495,15 @@
     draw();
     addEventListener("resize", () => { resize(); seed(); }, { passive: true });
 
-    // Live release info from GitHub
+    // Versão/links de download: lidos de version.json, um arquivo estático
+    // no próprio site (sem limite de requisições) - ver update-version.js
+    // pro motivo de não buscar isso ao vivo na API do GitHub.
     (async () => {
       try {
-        const res = await fetch("https://api.github.com/repos/Kermexx/grano-site/releases/latest");
-        if (!res.ok) throw new Error("no release");
+        const res = await fetch("./version.json", { cache: "no-store" });
+        if (!res.ok) throw new Error("no version.json");
         const data = await res.json();
-        const version = (data.tag_name || "").replace(/^v/, "");
-        const assets = data.assets || [];
-        const exe = assets.find((a) => a.name.toLowerCase().endsWith(".exe"));
-        const apk = assets.find((a) => a.name.toLowerCase().endsWith(".apk"));
+        const version = data.version || "";
 
         const heroSub = document.getElementById("hero-sub");
         const winVer = document.getElementById("win-ver");
@@ -512,8 +511,8 @@
         const winDl = document.getElementById("win-dl");
         const androidDl = document.getElementById("android-dl");
 
-        if (exe) {
-          winDl.href = exe.browser_download_url;
+        if (data.windowsUrl) {
+          winDl.href = data.windowsUrl;
           winDl.classList.remove("is-loading");
           winVer.textContent = "versão " + version;
           heroSub.textContent = "Windows · v" + version;
@@ -522,8 +521,8 @@
           winDl.classList.add("is-loading");
         }
 
-        if (apk) {
-          androidDl.href = apk.browser_download_url;
+        if (data.androidUrl) {
+          androidDl.href = data.androidUrl;
           androidDl.classList.remove("is-loading");
           androidVer.textContent = "versão " + version;
         } else {
