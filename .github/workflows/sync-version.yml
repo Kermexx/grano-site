@@ -1,0 +1,58 @@
+name: Sincroniza version.json com a release mais recente
+
+# Roda sozinho toda vez que uma release é publicada nesse repositório
+# (a mesma que recebe o .exe do PC e o .apk do mobile), e também pode ser
+# disparado manualmente (aba Actions > este workflow > Run workflow) -
+# útil se um asset (ex: o .apk) for anexado DEPOIS da release já ter sido
+# publicada, já que isso não dispara o evento "released" de novo sozinho.
+#
+# Usa o GITHUB_TOKEN automático do próprio Actions (autenticado, limite
+# de 1000 requisições/hora) em vez da API pública sem autenticação (60/hora
+# por IP, compartilhado - foi exatamente isso que travou o download do
+# site pra usuários reais antes dessa automação existir).
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Busca a release mais recente e monta version.json
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          RELEASE=$(gh api "repos/${{ github.repository }}/releases/latest")
+          VERSION=$(echo "$RELEASE" | jq -r '.tag_name | sub("^v"; "")')
+          WIN_URL=$(echo "$RELEASE" | jq -r '[.assets[] | select(.name | endswith(".exe"))][0].browser_download_url // ""')
+          APK_URL=$(echo "$RELEASE" | jq -r '[.assets[] | select(.name | endswith(".apk"))][0].browser_download_url // ""')
+
+          if [ -z "$VERSION" ]; then
+            echo "Não achei uma release publicada, abortando sem mexer em version.json."
+            exit 1
+          fi
+
+          jq -n --arg version "$VERSION" --arg win "$WIN_URL" --arg apk "$APK_URL" \
+            '{version: $version, windowsUrl: $win, androidUrl: $apk}' > version.json
+
+          echo "version.json gerado:"
+          cat version.json
+
+      - name: Commita e sobe se mudou algo
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet -- version.json; then
+            echo "Nada mudou, não precisa commitar."
+          else
+            git add version.json
+            git commit -m "Atualiza version.json automaticamente"
+            git push
+          fi
