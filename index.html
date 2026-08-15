@@ -214,8 +214,8 @@
     border-bottom: 1px solid var(--border);
     background: color-mix(in srgb, var(--surface) 80%, black);
   }
-  .window-bar span { width: 10px; height: 10px; border-radius: 999px; background: var(--border); }
-  .window-bar .wt { margin-left: 0.5rem; font-family: var(--font-mono); font-size: 0.72rem; color: var(--muted); }
+  .window-bar span { flex: none; width: 10px; height: 10px; border-radius: 999px; background: var(--border); }
+  .window-bar .wt { flex: 1; min-width: 0; margin-left: 0.5rem; font-family: var(--font-mono); font-size: 0.72rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .window-body { padding: clamp(1rem, 3vw, 2rem); display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
 
   .kpi { grid-column: span 4; display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.9rem; }
@@ -342,7 +342,7 @@
     <div class="wrap hero-inner">
       <span class="eyebrow"><span class="dot"></span> acesso por convite</span>
       <h1 class="headline">Cada grão do seu dinheiro,<br /><span class="accent-text">num lugar só.</span></h1>
-      <p class="sub">Despesas, receitas e investimentos organizados num painel rápido — para computador e celular, sincronizado pelo seu próprio Google Drive.</p>
+      <p class="sub">Painel financeiro completo para computador e celular: despesas, receitas e investimentos organizados num só lugar, sincronizados pelo seu próprio Google Drive.</p>
       <div class="hero-ctas" id="hero-ctas">
         <a href="#download" class="btn btn-primary">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v13" /><path d="m7 11 5 5 5-5" /><path d="M5 21h14" /></svg>
@@ -356,7 +356,7 @@
   <section class="showcase reveal" id="showcase">
     <div class="wrap">
       <div class="window">
-        <div class="window-bar"><span></span><span></span><span></span><span class="wt">Grano — Painel Financeiro</span></div>
+        <div class="window-bar"><span></span><span></span><span></span><span class="wt">Grano · Painel financeiro</span></div>
         <div class="window-body">
           <div class="kpi">
             <div class="kpi-card">
@@ -398,7 +398,7 @@
     <div class="wrap">
       <div class="section-head reveal">
         <h2>Feito pra uso real, todo mês</h2>
-        <p>Sem planilha, sem assinatura mensal, sem seus dados passando por servidor de terceiro.</p>
+        <p>Organize despesas, receitas e investimentos automaticamente, sem depender de planilha.</p>
       </div>
       <div class="feature-grid">
         <div class="feature reveal">
@@ -414,12 +414,12 @@
         <div class="feature reveal">
           <div class="ficon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7" /><path d="M21 3v6h-6" /></svg></div>
           <h3>Sincronização real</h3>
-          <p>Computador e celular sempre com os mesmos dados, guardados no seu próprio Google Drive — não no nosso servidor.</p>
+          <p>Computador e celular sempre com os mesmos dados, guardados no seu próprio Google Drive, não em um servidor nosso.</p>
         </div>
         <div class="feature reveal">
           <div class="ficon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v6c0 5 3.4 8.6 8 11 4.6-2.4 8-6 8-11V5l-8-3Z" /></svg></div>
           <h3>Só quem você convidar</h3>
-          <p>Login exige uma conta Google autorizada por você — ninguém entra sem estar na lista.</p>
+          <p>O login exige uma conta Google autorizada previamente, então só entra quem você convidar.</p>
         </div>
       </div>
     </div>
@@ -429,7 +429,7 @@
     <div class="wrap">
       <div class="dl-panel reveal">
         <h2>Baixe na sua plataforma</h2>
-        <p>Um app nativo, sem navegador, com atalho na área de trabalho ou na tela inicial.</p>
+        <p>Disponível para Windows e Android, com instalação direta e acesso rápido pelo atalho do app.</p>
         <div class="dl-cards">
           <div class="dl-card">
             <div class="dl-top">
@@ -450,7 +450,7 @@
         </div>
         <div class="smartscreen-note">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4" /><path d="M12 17h.01" /><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z" /></svg>
-          <span><strong>No Windows</strong>, o SmartScreen vai avisar que é um app de um publicador não reconhecido — é esperado, o instalador não é assinado. Clique em <strong>"Mais informações"</strong> e depois <strong>"Executar assim mesmo"</strong>. No Android, ative "instalar de fontes desconhecidas" quando pedido.</span>
+          <span><strong>No Windows</strong>, o SmartScreen vai avisar que é um app de um publicador não reconhecido. Isso é esperado, pois o instalador ainda não é assinado digitalmente: clique em <strong>"Mais informações"</strong> e depois em <strong>"Executar assim mesmo"</strong>. No Android, ative "instalar de fontes desconhecidas" quando pedido.</span>
         </div>
       </div>
     </div>
