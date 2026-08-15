@@ -256,8 +256,9 @@
   .section-head p + p { margin-top: 0.8rem; }
   .section-head strong { color: var(--text); }
 
-  .feature-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
-  @media (max-width: 720px) { .feature-grid { grid-template-columns: 1fr; } }
+  .feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+  @media (max-width: 860px) { .feature-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 560px) { .feature-grid { grid-template-columns: 1fr; } }
   .feature {
     background: linear-gradient(180deg, var(--surface), color-mix(in srgb, var(--surface) 92%, black));
     border: 1px solid var(--border);
