@@ -22,7 +22,13 @@ jobs:
   sync:
     runs-on: ubuntu-latest
     steps:
+      # Sem "ref" explícito, um gatilho por release faz o checkout ficar em
+      # detached HEAD (no commit da TAG, não da branch) - e git push falha
+      # com "You are not currently on a branch" (achado testando de
+      # verdade, não é teórico).
       - uses: actions/checkout@v4
+        with:
+          ref: master
 
       - name: Busca a release mais recente e monta version.json
         env:
@@ -37,6 +43,17 @@ jobs:
           if [ -z "$VERSION" ]; then
             echo "Não achei uma release publicada, abortando sem mexer em version.json."
             exit 1
+          fi
+
+          # Publicar o .exe e o .apk é feito em dois passos separados hoje -
+          # se esse workflow disparar no meio (só o .exe já subiu), NÃO
+          # sobrescreve version.json com um link faltando: melhor manter o
+          # que já está lá (a versão anterior, completa) até os dois assets
+          # existirem. Rodar de novo manualmente (workflow_dispatch) depois
+          # do segundo upload resolve.
+          if [ -z "$WIN_URL" ] || [ -z "$APK_URL" ]; then
+            echo "Release $VERSION ainda não tem os dois assets (.exe e .apk) - mantendo version.json como está."
+            exit 0
           fi
 
           jq -n --arg version "$VERSION" --arg win "$WIN_URL" --arg apk "$APK_URL" \
@@ -54,5 +71,5 @@ jobs:
           else
             git add version.json
             git commit -m "Atualiza version.json automaticamente"
-            git push
+            git push origin HEAD:master
           fi
