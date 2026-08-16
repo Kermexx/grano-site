@@ -455,6 +455,7 @@
   .dl-card .dl-top svg { width: 24px; height: 24px; flex: none; color: var(--text); }
   .dl-card .dl-top .platform { font-weight: 700; font-size: 1rem; }
   .dl-card .ver { font-family: var(--font-mono); font-size: 0.75rem; color: var(--muted); }
+  .dl-card .sha { display: block; font-family: var(--font-mono); font-size: 0.68rem; color: var(--muted); opacity: 0.75; margin-top: 0.2rem; word-break: break-all; }
   .dl-card .btn { width: 100%; justify-content: center; }
   .dl-card .btn.is-loading { opacity: 0.6; pointer-events: none; }
 
@@ -729,6 +730,7 @@
               <span class="platform">Windows</span>
             </div>
             <span class="ver" id="win-ver">buscando versão...</span>
+            <span class="sha" id="win-sha"></span>
             <a class="btn btn-primary is-loading" id="win-dl" href="#">Baixar .exe</a>
           </div>
           <div class="dl-card">
@@ -737,12 +739,13 @@
               <span class="platform">Android</span>
             </div>
             <span class="ver" id="android-ver">buscando versão...</span>
+            <span class="sha" id="android-sha"></span>
             <a class="btn btn-primary is-loading" id="android-dl" href="#">Baixar .apk</a>
           </div>
         </div>
         <div class="smartscreen-note">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4" /><path d="M12 17h.01" /><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z" /></svg>
-          <span><strong>No Windows</strong>, o SmartScreen vai avisar que é um app de um publicador não reconhecido. Isso é esperado, pois o instalador ainda não é assinado digitalmente: clique em <strong>"Mais informações"</strong> e depois em <strong>"Executar assim mesmo"</strong>. No Android, ative "instalar de fontes desconhecidas" quando pedido.</span>
+          <span><strong>No Windows</strong>, o SmartScreen vai avisar que é um app de um publicador não reconhecido. Isso é esperado, pois o instalador ainda não é assinado digitalmente: clique em <strong>"Mais informações"</strong> e depois em <strong>"Executar assim mesmo"</strong>. No Android, ative "instalar de fontes desconhecidas" quando pedido. O código SHA-256 abaixo de cada botão deixa você conferir que o arquivo baixado é exatamente o publicado, sem nenhuma alteração no caminho.</span>
         </div>
       </div>
     </div>
@@ -872,18 +875,22 @@
         // pra outro domínio sendo atribuído a um botão de download real.
         const isTrustedReleaseUrl = (url) =>
           typeof url === "string" && url.startsWith("https://github.com/Kermexx/grano-site/releases/download/");
+        const isSha256 = (v) => typeof v === "string" && /^[a-f0-9]{64}$/i.test(v);
 
         const heroSub = document.getElementById("hero-sub");
         const winVer = document.getElementById("win-ver");
         const androidVer = document.getElementById("android-ver");
         const winDl = document.getElementById("win-dl");
         const androidDl = document.getElementById("android-dl");
+        const winSha = document.getElementById("win-sha");
+        const androidSha = document.getElementById("android-sha");
 
         if (data.windowsUrl && isTrustedReleaseUrl(data.windowsUrl)) {
           winDl.href = data.windowsUrl;
           winDl.classList.remove("is-loading");
           winVer.textContent = "versão " + data.windowsVersion;
           heroSub.textContent = "Windows · v" + data.windowsVersion;
+          if (isSha256(data.windowsSha256)) winSha.textContent = "SHA-256: " + data.windowsSha256;
         } else {
           winVer.textContent = "indisponível no momento";
           winDl.classList.add("is-loading");
@@ -893,6 +900,7 @@
           androidDl.href = data.androidUrl;
           androidDl.classList.remove("is-loading");
           androidVer.textContent = "versão " + data.androidVersion;
+          if (isSha256(data.androidSha256)) androidSha.textContent = "SHA-256: " + data.androidSha256;
         } else {
           androidVer.textContent = "em breve";
         }
