@@ -13,11 +13,20 @@
 // aqui - passar só uma mexe apenas naquela plataforma, mantendo a outra
 // como estava.
 //
-// Uso: node update-version.js --windows 0.1.10
-//      node update-version.js --android 0.1.9
+// Uso: node update-version.js --windows 0.1.10 [--windows-file caminho/pro.exe]
+//      node update-version.js --android 0.1.9 [--android-file caminho/pro.apk]
 //      node update-version.js --windows 0.1.10 --android 0.1.9
+//
+// --windows-file/--android-file são opcionais: se passados, o hash SHA-256
+// do arquivo local é calculado e gravado (windowsSha256/androidSha256), pra
+// quem baixar poder conferir que o instalador não foi trocado (o instalador
+// não é assinado digitalmente - ver nota no site). Normalmente isso não
+// precisa ser rodado à mão: o workflow sync-version.yml já preenche esses
+// campos sozinho a partir do hash que o próprio GitHub calcula pra cada
+// asset de release.
 const fs = require("node:fs");
 const path = require("node:path");
+const crypto = require("node:crypto");
 
 const versionPath = path.join(__dirname, "version.json");
 const current = fs.existsSync(versionPath) ? JSON.parse(fs.readFileSync(versionPath, "utf8")) : {};
@@ -25,12 +34,20 @@ const current = fs.existsSync(versionPath) ? JSON.parse(fs.readFileSync(versionP
 const args = process.argv.slice(2);
 const windowsIdx = args.indexOf("--windows");
 const androidIdx = args.indexOf("--android");
+const windowsFileIdx = args.indexOf("--windows-file");
+const androidFileIdx = args.indexOf("--android-file");
 const windowsVersion = windowsIdx !== -1 ? args[windowsIdx + 1] : null;
 const androidVersion = androidIdx !== -1 ? args[androidIdx + 1] : null;
+const windowsFile = windowsFileIdx !== -1 ? args[windowsFileIdx + 1] : null;
+const androidFile = androidFileIdx !== -1 ? args[androidFileIdx + 1] : null;
 
 if (!windowsVersion && !androidVersion) {
   console.error("Uso: node update-version.js --windows 0.1.10 --android 0.1.9 (pelo menos um dos dois)");
   process.exit(1);
+}
+
+function sha256File(filePath) {
+  return crypto.createHash("sha256").update(fs.readFileSync(filePath)).digest("hex");
 }
 
 const data = {
@@ -42,6 +59,8 @@ const data = {
   androidUrl: androidVersion
     ? `https://github.com/Kermexx/grano-site/releases/download/v${androidVersion}/Grano-${androidVersion}.apk`
     : (current.androidUrl ?? null),
+  windowsSha256: windowsFile ? sha256File(windowsFile) : (current.windowsSha256 ?? null),
+  androidSha256: androidFile ? sha256File(androidFile) : (current.androidSha256 ?? null),
 };
 
 fs.writeFileSync(versionPath, JSON.stringify(data, null, 2) + "\n");

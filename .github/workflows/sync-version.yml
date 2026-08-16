@@ -54,26 +54,36 @@ jobs:
 
           CURRENT=$(cat version.json 2>/dev/null || echo '{}')
 
+          # GitHub já calcula o SHA-256 de cada asset (campo "digest") - dá
+          # pra publicar isso no version.json sem baixar o arquivo, pra quem
+          # quiser conferir que o instalador baixado não foi trocado (o
+          # instalador não é assinado digitalmente, ver nota no site).
           if [ "$WIN_RELEASE" != "null" ]; then
             WIN_VERSION=$(echo "$WIN_RELEASE" | jq -r '.tag_name | sub("^v"; "")')
-            WIN_URL=$(echo "$WIN_RELEASE" | jq -r '[.assets[] | select(.name | endswith(".exe"))][0].browser_download_url')
+            WIN_ASSET=$(echo "$WIN_RELEASE" | jq -r '[.assets[] | select(.name | endswith(".exe"))][0]')
+            WIN_URL=$(echo "$WIN_ASSET" | jq -r '.browser_download_url')
+            WIN_SHA256=$(echo "$WIN_ASSET" | jq -r '.digest // "" | sub("^sha256:"; "")')
           else
             WIN_VERSION=$(echo "$CURRENT" | jq -r '.windowsVersion // null')
             WIN_URL=$(echo "$CURRENT" | jq -r '.windowsUrl // null')
+            WIN_SHA256=$(echo "$CURRENT" | jq -r '.windowsSha256 // null')
           fi
 
           if [ "$APK_RELEASE" != "null" ]; then
             APK_VERSION=$(echo "$APK_RELEASE" | jq -r '.tag_name | sub("^v"; "")')
-            APK_URL=$(echo "$APK_RELEASE" | jq -r '[.assets[] | select(.name | endswith(".apk"))][0].browser_download_url')
+            APK_ASSET=$(echo "$APK_RELEASE" | jq -r '[.assets[] | select(.name | endswith(".apk"))][0]')
+            APK_URL=$(echo "$APK_ASSET" | jq -r '.browser_download_url')
+            APK_SHA256=$(echo "$APK_ASSET" | jq -r '.digest // "" | sub("^sha256:"; "")')
           else
             APK_VERSION=$(echo "$CURRENT" | jq -r '.androidVersion // null')
             APK_URL=$(echo "$CURRENT" | jq -r '.androidUrl // null')
+            APK_SHA256=$(echo "$CURRENT" | jq -r '.androidSha256 // null')
           fi
 
           jq -n \
-            --arg winVer "$WIN_VERSION" --arg winUrl "$WIN_URL" \
-            --arg apkVer "$APK_VERSION" --arg apkUrl "$APK_URL" \
-            '{windowsVersion: $winVer, androidVersion: $apkVer, windowsUrl: $winUrl, androidUrl: $apkUrl}' > version.json
+            --arg winVer "$WIN_VERSION" --arg winUrl "$WIN_URL" --arg winSha "$WIN_SHA256" \
+            --arg apkVer "$APK_VERSION" --arg apkUrl "$APK_URL" --arg apkSha "$APK_SHA256" \
+            '{windowsVersion: $winVer, androidVersion: $apkVer, windowsUrl: $winUrl, androidUrl: $apkUrl, windowsSha256: $winSha, androidSha256: $apkSha}' > version.json
 
           echo "version.json gerado:"
           cat version.json
