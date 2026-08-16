@@ -503,7 +503,6 @@
         const res = await fetch("./version.json", { cache: "no-store" });
         if (!res.ok) throw new Error("no version.json");
         const data = await res.json();
-        const version = data.version || "";
 
         const heroSub = document.getElementById("hero-sub");
         const winVer = document.getElementById("win-ver");
@@ -514,8 +513,8 @@
         if (data.windowsUrl) {
           winDl.href = data.windowsUrl;
           winDl.classList.remove("is-loading");
-          winVer.textContent = "versão " + version;
-          heroSub.textContent = "Windows · v" + version;
+          winVer.textContent = "versão " + data.windowsVersion;
+          heroSub.textContent = "Windows · v" + data.windowsVersion;
         } else {
           winVer.textContent = "indisponível no momento";
           winDl.classList.add("is-loading");
@@ -524,7 +523,7 @@
         if (data.androidUrl) {
           androidDl.href = data.androidUrl;
           androidDl.classList.remove("is-loading");
-          androidVer.textContent = "versão " + version;
+          androidVer.textContent = "versão " + data.androidVersion;
         } else {
           androidVer.textContent = "em breve";
         }

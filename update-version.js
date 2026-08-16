@@ -8,21 +8,41 @@
 // daquele IP, do nada. version.json é um arquivo estático servido pelo
 // GitHub Pages - sem limite nenhum.
 //
-// Uso: node update-version.js 0.1.9
+// PC e mobile são publicados em momentos diferentes (não saem sempre
+// juntos na mesma versão), então cada plataforma tem sua própria versão
+// aqui - passar só uma mexe apenas naquela plataforma, mantendo a outra
+// como estava.
+//
+// Uso: node update-version.js --windows 0.1.10
+//      node update-version.js --android 0.1.9
+//      node update-version.js --windows 0.1.10 --android 0.1.9
 const fs = require("node:fs");
 const path = require("node:path");
 
-const version = process.argv[2];
-if (!version) {
-  console.error("Uso: node update-version.js <versão, ex: 0.1.9>");
+const versionPath = path.join(__dirname, "version.json");
+const current = fs.existsSync(versionPath) ? JSON.parse(fs.readFileSync(versionPath, "utf8")) : {};
+
+const args = process.argv.slice(2);
+const windowsIdx = args.indexOf("--windows");
+const androidIdx = args.indexOf("--android");
+const windowsVersion = windowsIdx !== -1 ? args[windowsIdx + 1] : null;
+const androidVersion = androidIdx !== -1 ? args[androidIdx + 1] : null;
+
+if (!windowsVersion && !androidVersion) {
+  console.error("Uso: node update-version.js --windows 0.1.10 --android 0.1.9 (pelo menos um dos dois)");
   process.exit(1);
 }
 
 const data = {
-  version,
-  windowsUrl: `https://github.com/Kermexx/grano-site/releases/download/v${version}/Grano-Setup-${version}.exe`,
-  androidUrl: `https://github.com/Kermexx/grano-site/releases/download/v${version}/Grano-${version}.apk`,
+  windowsVersion: windowsVersion ?? current.windowsVersion ?? null,
+  androidVersion: androidVersion ?? current.androidVersion ?? null,
+  windowsUrl: windowsVersion
+    ? `https://github.com/Kermexx/grano-site/releases/download/v${windowsVersion}/Grano-Setup-${windowsVersion}.exe`
+    : (current.windowsUrl ?? null),
+  androidUrl: androidVersion
+    ? `https://github.com/Kermexx/grano-site/releases/download/v${androidVersion}/Grano-${androidVersion}.apk`
+    : (current.androidUrl ?? null),
 };
 
-fs.writeFileSync(path.join(__dirname, "version.json"), JSON.stringify(data, null, 2) + "\n");
+fs.writeFileSync(versionPath, JSON.stringify(data, null, 2) + "\n");
 console.log("version.json atualizado:", data);

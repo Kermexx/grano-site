@@ -1,5 +1,6 @@
 {
-  "version": "0.1.9",
-  "windowsUrl": "https://github.com/Kermexx/grano-site/releases/download/v0.1.9/Grano-Setup-0.1.9.exe",
+  "windowsVersion": "0.1.10",
+  "androidVersion": "0.1.9",
+  "windowsUrl": "https://github.com/Kermexx/grano-site/releases/download/v0.1.10/Grano-Setup-0.1.10.exe",
   "androidUrl": "https://github.com/Kermexx/grano-site/releases/download/v0.1.9/Grano-0.1.9.apk"
 }

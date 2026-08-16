@@ -1,10 +1,20 @@
-name: Sincroniza version.json com a release mais recente
+name: Sincroniza version.json com as releases mais recentes
 
 # Roda sozinho toda vez que uma release é publicada nesse repositório
 # (a mesma que recebe o .exe do PC e o .apk do mobile), e também pode ser
 # disparado manualmente (aba Actions > este workflow > Run workflow) -
-# útil se um asset (ex: o .apk) for anexado DEPOIS da release já ter sido
-# publicada, já que isso não dispara o evento "released" de novo sozinho.
+# útil se um asset for anexado DEPOIS da release já ter sido publicada,
+# já que isso não dispara o evento "released" de novo sozinho.
+#
+# PC e mobile são publicados em momentos diferentes, cada um na sua
+# versão - não saem sempre juntos na mesma tag (achado testando de
+# verdade: uma release só de Windows não tinha .apk nenhum, e a versão
+# anterior deste workflow exigia os dois assets NA MESMA release antes de
+# atualizar qualquer coisa, o que travava o link do Windows numa versão
+# velha esperando o mobile alcançar). Agora cada plataforma é resolvida
+# separado: pega a release mais recente QUE TENHA aquele tipo de asset
+# (.exe ou .apk), sem exigir que seja a mesma release nem que a outra
+# plataforma também tenha saído.
 #
 # Usa o GITHUB_TOKEN automático do próprio Actions (autenticado, limite
 # de 1000 requisições/hora) em vez da API pública sem autenticação (60/hora
@@ -30,34 +40,40 @@ jobs:
         with:
           ref: master
 
-      - name: Busca a release mais recente e monta version.json
+      - name: Busca a release mais recente de cada plataforma e monta version.json
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          RELEASE=$(gh api "repos/${{ github.repository }}/releases/latest")
-          VERSION=$(echo "$RELEASE" | jq -r '.tag_name | sub("^v"; "")')
-          WIN_URL=$(echo "$RELEASE" | jq -r '[.assets[] | select(.name | endswith(".exe"))][0].browser_download_url // ""')
-          APK_URL=$(echo "$RELEASE" | jq -r '[.assets[] | select(.name | endswith(".apk"))][0].browser_download_url // ""')
+          # Até 30 releases mais recentes já cobre qualquer cenário real de
+          # atraso entre plataformas sem paginar a API à toa.
+          RELEASES=$(gh api "repos/${{ github.repository }}/releases?per_page=30")
 
-          if [ -z "$VERSION" ]; then
-            echo "Não achei uma release publicada, abortando sem mexer em version.json."
-            exit 1
+          WIN_RELEASE=$(echo "$RELEASES" | jq -r '[.[] | select(.draft == false) | select([.assets[] | select(.name | endswith(".exe"))] | length > 0)][0]')
+          APK_RELEASE=$(echo "$RELEASES" | jq -r '[.[] | select(.draft == false) | select([.assets[] | select(.name | endswith(".apk"))] | length > 0)][0]')
+
+          CURRENT=$(cat version.json 2>/dev/null || echo '{}')
+
+          if [ "$WIN_RELEASE" != "null" ]; then
+            WIN_VERSION=$(echo "$WIN_RELEASE" | jq -r '.tag_name | sub("^v"; "")')
+            WIN_URL=$(echo "$WIN_RELEASE" | jq -r '[.assets[] | select(.name | endswith(".exe"))][0].browser_download_url')
+          else
+            WIN_VERSION=$(echo "$CURRENT" | jq -r '.windowsVersion // null')
+            WIN_URL=$(echo "$CURRENT" | jq -r '.windowsUrl // null')
           fi
 
-          # Publicar o .exe e o .apk é feito em dois passos separados hoje -
-          # se esse workflow disparar no meio (só o .exe já subiu), NÃO
-          # sobrescreve version.json com um link faltando: melhor manter o
-          # que já está lá (a versão anterior, completa) até os dois assets
-          # existirem. Rodar de novo manualmente (workflow_dispatch) depois
-          # do segundo upload resolve.
-          if [ -z "$WIN_URL" ] || [ -z "$APK_URL" ]; then
-            echo "Release $VERSION ainda não tem os dois assets (.exe e .apk) - mantendo version.json como está."
-            exit 0
+          if [ "$APK_RELEASE" != "null" ]; then
+            APK_VERSION=$(echo "$APK_RELEASE" | jq -r '.tag_name | sub("^v"; "")')
+            APK_URL=$(echo "$APK_RELEASE" | jq -r '[.assets[] | select(.name | endswith(".apk"))][0].browser_download_url')
+          else
+            APK_VERSION=$(echo "$CURRENT" | jq -r '.androidVersion // null')
+            APK_URL=$(echo "$CURRENT" | jq -r '.androidUrl // null')
           fi
 
-          jq -n --arg version "$VERSION" --arg win "$WIN_URL" --arg apk "$APK_URL" \
-            '{version: $version, windowsUrl: $win, androidUrl: $apk}' > version.json
+          jq -n \
+            --arg winVer "$WIN_VERSION" --arg winUrl "$WIN_URL" \
+            --arg apkVer "$APK_VERSION" --arg apkUrl "$APK_URL" \
+            '{windowsVersion: $winVer, androidVersion: $apkVer, windowsUrl: $winUrl, androidUrl: $apkUrl}' > version.json
 
           echo "version.json gerado:"
           cat version.json
