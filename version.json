@@ -2,5 +2,7 @@
   "windowsVersion": "0.1.11",
   "androidVersion": "0.1.11",
   "windowsUrl": "https://github.com/Kermexx/grano-site/releases/download/v0.1.11/Grano-Setup-0.1.11.exe",
-  "androidUrl": "https://github.com/Kermexx/grano-site/releases/download/v0.1.11/Grano-0.1.11.apk"
+  "androidUrl": "https://github.com/Kermexx/grano-site/releases/download/v0.1.11/Grano-0.1.11.apk",
+  "windowsSha256": "f50709b806d9567f59227a7941213d829d397369592d4dfd2d1ffdbf3c773e0d",
+  "androidSha256": "8d97fdb8decc435ae43748526a33f73a0260a3431585c30a398ca02d0976f90b"
 }
