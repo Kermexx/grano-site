@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<title>Política de Privacidade — Grano</title>
+<meta name="description" content="Política de privacidade do Grano, painel financeiro pessoal para computador e celular." />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="theme-color" content="#fbf4ee" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#17140f" media="(prefers-color-scheme: dark)" />
+<style>
+  :root {
+    --bg: #fbf4ee;
+    --surface: #ffffff;
+    --surface-alt: #f3e9de;
+    --border: #e7d4c2;
+    --fg: #2c2a28;
+    --muted: #7d6d60;
+    --accent: #b87333;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #17140f;
+      --surface: #201c17;
+      --surface-alt: #2a2419;
+      --border: #3a3226;
+      --fg: #f2e9de;
+      --muted: #a89985;
+      --accent: #d68a4d;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    line-height: 1.6;
+  }
+  main {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 56px 24px 80px;
+  }
+  a { color: var(--accent); }
+  h1 {
+    font-size: 28px;
+    margin: 0 0 8px;
+  }
+  .updated {
+    color: var(--muted);
+    font-size: 14px;
+    margin: 0 0 40px;
+  }
+  h2 {
+    font-size: 18px;
+    margin: 36px 0 12px;
+  }
+  p, li { color: var(--fg); font-size: 15px; }
+  ul { padding-left: 20px; }
+  .back {
+    display: inline-block;
+    margin-bottom: 24px;
+    font-size: 14px;
+    color: var(--muted);
+    text-decoration: none;
+  }
+</style>
+</head>
+<body>
+<main>
+  <a class="back" href="./">&larr; Voltar pro Grano</a>
+  <h1>Política de Privacidade</h1>
+  <p class="updated">Última atualização: 24 de agosto de 2026</p>
+
+  <p>O Grano é um aplicativo financeiro pessoal para Windows e Android. Esta página explica quais dados o app usa e como.</p>
+
+  <h2>Onde ficam seus dados</h2>
+  <p>Todo dado que você insere no Grano (despesas, receitas, investimentos, categorias) fica guardado localmente, num banco de dados dentro do seu próprio computador ou celular. O Grano não tem nenhum servidor central guardando os dados financeiros de ninguém.</p>
+
+  <h2>Sincronização com o Google Drive</h2>
+  <p>Se você conectar sua conta Google, o Grano usa essa conexão só pra duas coisas:</p>
+  <ul>
+    <li><strong>Enviar/baixar um único arquivo de backup</strong> que o próprio app cria no seu Drive, pra manter o PC e o celular com os mesmos dados. O escopo usado (<code>drive.file</code>) só dá acesso aos arquivos que o Grano mesmo criou — o app nunca enxerga, lista ou acessa qualquer outro arquivo da sua conta.</li>
+    <li><strong>Identificar sua conta</strong> (endereço de e-mail), pra conferir se ela tem permissão de acessar o app.</li>
+  </ul>
+  <p>Você pode desconectar sua conta a qualquer momento nas Configurações do app, o que apaga o token de acesso salvo localmente.</p>
+
+  <h2>O que o Grano não faz</h2>
+  <ul>
+    <li>Não vende, aluga ou compartilha seus dados com terceiros.</li>
+    <li>Não usa seus dados financeiros pra publicidade.</li>
+    <li>Não tem rastreamento de uso ou analytics dentro do app.</li>
+  </ul>
+
+  <h2>Remoção de dados</h2>
+  <p>Como os dados ficam só no seu dispositivo, desinstalar o app remove tudo. Se você conectou o Google Drive, o arquivo de backup criado pelo Grano pode ser apagado diretamente na sua conta do Drive a qualquer momento.</p>
+</main>
+</body>
+</html>
