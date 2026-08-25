@@ -1,8 +1,8 @@
 {
-  "windowsVersion": "0.1.22",
+  "windowsVersion": "0.1.23",
   "androidVersion": "0.1.23",
-  "windowsUrl": "https://github.com/Kermexx/grano-site/releases/download/v0.1.22/Grano-Setup-0.1.22.exe",
+  "windowsUrl": "https://github.com/Kermexx/grano-site/releases/download/v0.1.23/Grano-Setup-0.1.23.exe",
   "androidUrl": "https://github.com/Kermexx/grano-site/releases/download/v0.1.23/Grano-0.1.23.apk",
-  "windowsSha256": "1f43ba2661b80054446f68b2c07cd47090486a83d056ff1785847539a2c0a4db",
+  "windowsSha256": "b27d389ece48427ac8668220fe723fd15fa1c0844debb4b43e4602cbbb4f9835",
   "androidSha256": "8342a8269e4b5000bf89232c87af1984f35535721a1d4b8f7130cce0ddda091d"
 }
