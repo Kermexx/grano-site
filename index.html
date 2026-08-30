@@ -363,7 +363,15 @@
   .section-head strong { color: var(--text); }
 
   .feature-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
-  @media (max-width: 980px) { .feature-grid { grid-template-columns: repeat(2, 1fr); } }
+  /* 10 cards em 4 colunas sobra 2 na última fileira - em vez de deixar
+     buraco, os 2 últimos (que são também os "novo") ocupam 2 colunas cada
+     e preenchem a fileira toda. Some no breakpoint de 2 colunas, onde 10
+     já divide certinho sem sobra. */
+  .feature-grid .feature:nth-child(9), .feature-grid .feature:nth-child(10) { grid-column: span 2; }
+  @media (max-width: 980px) {
+    .feature-grid { grid-template-columns: repeat(2, 1fr); }
+    .feature-grid .feature:nth-child(9), .feature-grid .feature:nth-child(10) { grid-column: span 1; }
+  }
   @media (max-width: 560px) { .feature-grid { grid-template-columns: 1fr; } }
   .feature {
     background: var(--surface);
